@@ -6,7 +6,7 @@ Basic steps:
   0) Install JDK 1.5 (or greater), Ant 1.7.0 (or greater)
   1) Download Lucene from Apache and unpack it
   2) Connect to the top-level of your Lucene installation
-  3) Install JavaCC (optional)
+  3) Install JavaCC (optional) //wxc这个在什么情况下就不是optional的了？
   4) Run ant
 
 Step 0) Set up your development environment (JDK 1.5 or greater,
