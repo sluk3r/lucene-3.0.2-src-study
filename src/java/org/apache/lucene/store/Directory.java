@@ -82,6 +82,7 @@ public abstract class Directory implements Closeable {
    *  stable storage.  Lucene uses this to properly commit
    *  changes to the index, to prevent a machine/OS crash
    *  from corrupting the index. */
+  //wangxc 这个运行的时机？
   public void sync(String name) throws IOException {}
 
   /** Returns a stream reading an existing file. */
@@ -102,6 +103,7 @@ public abstract class Directory implements Closeable {
   /** Construct a {@link Lock}.
    * @param name the name of the lock file
    */
+  //wangxc 先留意下这个， 以后再细看Lock的实现机制。
   public Lock makeLock(String name) {
       return lockFactory.makeLock(name);
   }
@@ -113,7 +115,7 @@ public abstract class Directory implements Closeable {
    */
   public void clearLock(String name) throws IOException {
     if (lockFactory != null) {
-      lockFactory.clearLock(name);
+      lockFactory.clearLock(name); //wangxc, 这个Lock是跟名字绑定的？
     }
   }
 
@@ -154,6 +156,7 @@ public abstract class Directory implements Closeable {
    * are considered "the same index".  This is how locking
    * "scopes" to the right index.
    */
+  //wangxc LockID直接用了toString
   public String getLockID() {
       return this.toString();
   }
@@ -227,3 +230,9 @@ public abstract class Directory implements Closeable {
       throw new AlreadyClosedException("this Directory is closed");
   }
 }
+
+
+
+/*
+wangxc 父类地留了接口，封装了常用方法（包括静态的）
+ */

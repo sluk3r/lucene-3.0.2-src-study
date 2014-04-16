@@ -56,7 +56,7 @@ public class SingleInstanceLockFactory extends LockFactory {
 class SingleInstanceLock extends Lock {
 
   String lockName;
-  private HashSet<String> locks;
+  private HashSet<String> locks; //wangxc 基于HashMap实现的锁， 也就是记录下。 如果Map里有就表示锁上了。
 
   public SingleInstanceLock(HashSet<String> locks, String lockName) {
     this.locks = locks;

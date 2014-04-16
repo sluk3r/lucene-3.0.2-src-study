@@ -106,6 +106,7 @@ public abstract class LuceneTestCase extends TestCase {
         fail("ConcurrentMergeScheduler hit unhandled exceptions");
       }
     } finally {
+      //wangxc 看到Field相关的缓存，  这个缓存的具体表现是？
       purgeFieldCache(FieldCache.DEFAULT);
     }
     
@@ -210,6 +211,7 @@ public abstract class LuceneTestCase extends TestCase {
   }
   
   @Override
+  //wangxc  这个runBare的意义？ 从下面的逻辑看， 就是设置了下seed。 这个runBare的时机？ 是不是每运行一次自定义的TestCase前就要运行次这个？
   public void runBare() throws Throwable {
     try {
       seed = null;

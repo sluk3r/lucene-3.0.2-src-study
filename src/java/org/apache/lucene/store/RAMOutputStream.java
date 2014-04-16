@@ -25,6 +25,7 @@ import java.io.IOException;
  * <p>For Lucene internal use.</p>
  */
 
+//wangxc 还真是没有用Java原生的IO类.
 public class RAMOutputStream extends IndexOutput {
   static final int BUFFER_SIZE = 1024;
 

@@ -33,8 +33,8 @@ public class RAMDirectory extends Directory implements Serializable {
 
   private static final long serialVersionUID = 1l;
 
-  HashMap<String,RAMFile> fileMap = new HashMap<String,RAMFile>();
-  long sizeInBytes;
+  HashMap<String,RAMFile> fileMap = new HashMap<String,RAMFile>(); //wangxc 是用HashMap来表示Tree？
+  long sizeInBytes; //wangxc 这个记录的是当前目录下的总字节数？
   
   // *****
   // Lock acquisition sequence:  RAMDirectory, then RAMFile
@@ -72,7 +72,7 @@ public class RAMDirectory extends Directory implements Serializable {
 
   @Override
   public synchronized final String[] listAll() {
-    ensureOpen();
+    ensureOpen(); //wangxc 这个ensureOpen是不是可以搞成模板模式？当然，这么个小设计也就无所谓了。
     Set<String> fileNames = fileMap.keySet();
     String[] result = new String[fileNames.size()];
     int i = 0;
@@ -175,7 +175,7 @@ public class RAMDirectory extends Directory implements Serializable {
   @Override
   public IndexOutput createOutput(String name) throws IOException {
     ensureOpen();
-    RAMFile file = new RAMFile(this);
+    RAMFile file = new RAMFile(this);//wangxc 这个类是关键所在
     synchronized (this) {
       RAMFile existing = fileMap.get(name);
       if (existing!=null) {

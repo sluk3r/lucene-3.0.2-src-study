@@ -48,7 +48,7 @@ public class TestDemo extends LuceneTestCase {
     Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
 
     // Store the index in memory:
-    Directory directory = new RAMDirectory();
+    Directory directory = new RAMDirectory(); //wangxc 这个应该是最简单的锁机制？或者应该叫无锁Factory（看了实现， 是基于HashMap实现的）
     // To store an index on disk, use this instead:
     //Directory directory = FSDirectory.open("/tmp/testindex");
     IndexWriter iwriter = new IndexWriter(directory, analyzer, true,
@@ -61,7 +61,7 @@ public class TestDemo extends LuceneTestCase {
     iwriter.close();
     
     // Now search the index:
-    IndexSearcher isearcher = new IndexSearcher(directory, true); // read-only=true
+    IndexSearcher isearcher = new IndexSearcher(directory, true); // read-only=true wangxc 这个注释写法不错。
     // Parse a simple query that searches for "text":
     QueryParser parser = new QueryParser(Version.LUCENE_CURRENT, "fieldname", analyzer);
     Query query = parser.parse("text");

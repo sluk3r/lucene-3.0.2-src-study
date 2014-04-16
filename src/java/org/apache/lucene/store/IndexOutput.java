@@ -27,6 +27,7 @@ import org.apache.lucene.util.UnicodeUtil;
  * @see Directory
  * @see IndexInput
  */
+//wangxc， 没有直接用Java的IO， 而是自己搞一个？
 public abstract class IndexOutput implements Closeable {
 
   /** Writes a single byte.
