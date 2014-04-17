@@ -47,28 +47,29 @@ public class TestTermRangeQuery extends LuceneTestCase {
   }
 
   public void testExclusive() throws Exception {
-    Query query = new TermRangeQuery("content", "A", "C", false, false);
-    initializeIndex(new String[] {"A", "B", "C", "D"});
+    Query query = new TermRangeQuery("content", "A", "C", false, false); //wangxc 两段都排除地查。
+    initializeIndex(new String[] {"A", "B", "C", "D"}); //wangxc 这是四篇文档 每个文档里只有一个字母。
     IndexSearcher searcher = new IndexSearcher(dir, true);
     ScoreDoc[] hits = searcher.search(query, null, 1000).scoreDocs;
     assertEquals("A,B,C,D, only B in range", 1, hits.length);
     searcher.close();
 
-    initializeIndex(new String[] {"A", "B", "D"});
+    initializeIndex(new String[] {"A", "B", "D"});//wangxc 这是要跟上面的重复？
     searcher = new IndexSearcher(dir, true);
     hits = searcher.search(query, null, 1000).scoreDocs;
-    assertEquals("A,B,D, only B in range", 1, hits.length);
+    assertEquals("A,B,D, only B in range", 1, hits.length);//wangxc 这个跟上面的测试有什么不同？这里想说明什么？
     searcher.close();
 
     addDoc("C");
     searcher = new IndexSearcher(dir, true);
     hits = searcher.search(query, null, 1000).scoreDocs;
-    assertEquals("C added, still only B in range", 1, hits.length);
+    assertEquals("C added, still only B in range", 1, hits.length);//wangxc 就是为了体现这个C加与不加的效果？ 这个加与不加有什么影响？
     searcher.close();
+      //wangxc 可以进一步的想， 这个Exclusive在算法上怎么实现的？ 参数的传递是怎么设计的？
   }
   
   public void testInclusive() throws Exception {
-    Query query = new TermRangeQuery("content", "A", "C", true, true);
+    Query query = new TermRangeQuery("content", "A", "C", true, true);//wangxc 如果换成像“word”这样的词有什么影响？
 
     initializeIndex(new String[]{"A", "B", "C", "D"});
     IndexSearcher searcher = new IndexSearcher(dir, true);
@@ -85,11 +86,11 @@ public class TestTermRangeQuery extends LuceneTestCase {
     addDoc("C");
     searcher = new IndexSearcher(dir, true);
     hits = searcher.search(query, null, 1000).scoreDocs;
-    assertEquals("C added - A, B, C in range", 3, hits.length);
+    assertEquals("C added - A, B, C in range", 3, hits.length); //wangxc 这是一种什么测试理念？边界测试？
     searcher.close();
   }
 
-  public void testEqualsHashcode() {
+  public void testEqualsHashcode() {//wangxc HashCode是Java里的一个基本原则，为什么要单拿出来搞这么个测试？
     Query query = new TermRangeQuery("content", "A", "C", true, true);
     
     query.setBoost(1.0f);
@@ -131,12 +132,13 @@ public class TestTermRangeQuery extends LuceneTestCase {
     assertFalse("queries with different inclusive are not equal", query.equals(other));
     
     query = new TermRangeQuery("content", "A", "C", false, false);
-    other = new TermRangeQuery("content", "A", "C", false, false, Collator.getInstance());
+    other = new TermRangeQuery("content", "A", "C", false, false, Collator.getInstance());//wangxc Collator这个是Java标准API里支持。第一次见。
     assertFalse("a query with a collator is not equal to one without", query.equals(other));
   }
 
   public void testExclusiveCollating() throws Exception {
-    Query query = new TermRangeQuery("content", "A", "C", false, false, Collator.getInstance(Locale.ENGLISH));
+    Query query = new TermRangeQuery("content", "A", "C", false, false, Collator.getInstance(Locale.ENGLISH));//wangxc 这个Collator解决的是按什么Locale进行排序的问题？
+    //wangxc 中文排序怎样？  看到一篇文章： http://dushanggaolou.iteye.com/blog/1198128。还行。
     initializeIndex(new String[] {"A", "B", "C", "D"});
     IndexSearcher searcher = new IndexSearcher(dir, true);
     ScoreDoc[] hits = searcher.search(query, null, 1000).scoreDocs;
@@ -178,11 +180,11 @@ public class TestTermRangeQuery extends LuceneTestCase {
     searcher.close();
   }
 
-  public void testFarsi() throws Exception {
+  public void testFarsi() throws Exception {//wangxc Farsi是波斯语
     // Neither Java 1.4.2 nor 1.5.0 has Farsi Locale collation available in
     // RuleBasedCollator.  However, the Arabic Locale seems to order the Farsi
     // characters properly.
-    Collator collator = Collator.getInstance(new Locale("ar"));
+    Collator collator = Collator.getInstance(new Locale("ar")); //wangxc 直接用了Arabic。
     Query query = new TermRangeQuery("content", "\u062F", "\u0698", true, true, collator);
     // Unicode order would include U+0633 in [ U+062F - U+0698 ], but Farsi
     // orders the U+0698 character before the U+0633 character, so the single
@@ -199,11 +201,11 @@ public class TestTermRangeQuery extends LuceneTestCase {
     searcher.close();
   }
   
-  public void testDanish() throws Exception {
+  public void testDanish() throws Exception { //wangxc 丹麦
     Collator collator = Collator.getInstance(new Locale("da", "dk"));
     // Danish collation orders the words below in the given order (example taken
     // from TestSort.testInternationalSort() ).
-    String[] words = { "H\u00D8T", "H\u00C5T", "MAND" };
+    String[] words = { "H\u00D8T", "H\u00C5T", "MAND" };//wangxc 在不能直接写字的情况下， 用类似"H\u00C5T"的表示也是不错的方式。
     Query query = new TermRangeQuery("content", "H\u00D8T", "MAND", false, false, collator);
 
     // Unicode order would not include "H\u00C5T" in [ "H\u00D8T", "MAND" ],
@@ -219,6 +221,7 @@ public class TestTermRangeQuery extends LuceneTestCase {
     searcher.close();
   }
 
+  //wangxc 这个Analyzer只在最后的两个测试testExclusiveLowerNull和testInclusiveLowerNull中用到。
   private static class SingleCharAnalyzer extends Analyzer {
 
     private static class SingleCharTokenizer extends Tokenizer {
@@ -304,6 +307,12 @@ public class TestTermRangeQuery extends LuceneTestCase {
   public void testExclusiveLowerNull() throws Exception {
     Analyzer analyzer = new SingleCharAnalyzer();
     //http://issues.apache.org/jira/browse/LUCENE-38
+    /*
+    // wangxc 看这个issues的记录不错， 应该能从这里翻出些犄角旮旯的料。 有这么些好处：
+      1. 这些料在实际工作中可以预料地应对一些表面上掩盖的问题。
+      2. 以这些料出发，可以串起来深层次的研究。
+      3. 面试中，如果能应对类似的料，说明够水平了。
+    */
     Query query = new TermRangeQuery("content", null, "C",
                                  false, false);
     initializeIndex(new String[] {"A", "B", "", "C", "D"}, analyzer);
