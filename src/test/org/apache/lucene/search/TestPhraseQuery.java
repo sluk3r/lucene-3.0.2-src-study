@@ -49,12 +49,12 @@ public class TestPhraseQuery extends LuceneTestCase {
     super.setUp();
     directory = new RAMDirectory();
     Analyzer analyzer = new Analyzer() {
-      @Override
+      @Override //wangxc 这里的实现没有用到fieldName，原因？
       public TokenStream tokenStream(String fieldName, Reader reader) {
         return new WhitespaceTokenizer(reader);
       }
 
-      @Override
+      @Override //wangxc 这里写死是基于什么考虑的？
       public int getPositionIncrementGap(String fieldName) {
         return 100;
       }
@@ -65,6 +65,9 @@ public class TestPhraseQuery extends LuceneTestCase {
     Document doc = new Document();
     doc.add(new Field("field", "one two three four five", Field.Store.YES, Field.Index.ANALYZED));
     doc.add(new Field("repeated", "this is a repeated field - first part", Field.Store.YES, Field.Index.ANALYZED));
+    //wangxc 第一次见这个类。 除了Field外， 还有其它实现么？ 看到四个类： AbstractField Field NumericField FieldsReader中的LazyField
+    //wangxc 还有一个问题。 这里怎么特意定义一个Fieldable？
+    //wangxc 在PhraseQuery的过程中， 是否重复有什么影响么？
     Fieldable repeatedField = new Field("repeated", "second part of a repeated field", Field.Store.YES, Field.Index.ANALYZED);
     doc.add(repeatedField);
     doc.add(new Field("palindrome", "one two three two one", Field.Store.YES, Field.Index.ANALYZED));
@@ -81,6 +84,7 @@ public class TestPhraseQuery extends LuceneTestCase {
     writer.optimize();
     writer.close();
 
+      //wangxc 没看出来这些Doc有什么用？
     searcher = new IndexSearcher(directory, true);
     query = new PhraseQuery();
   }
@@ -116,9 +120,11 @@ public class TestPhraseQuery extends LuceneTestCase {
   public void testExact() throws Exception {
     // slop is zero by default
     query.add(new Term("field", "four"));
-    query.add(new Term("field", "five"));
+    query.add(new Term("field", "five"));//wangxc 这里add两个term是不是相当于解析了\"four five\"这个Phrase？ 用这种方式一个好处是两个term的前后关系没有明显的显示了。
     ScoreDoc[] hits = searcher.search(query, null, 1000).scoreDocs;
+    //wangxc 上面的Doc里是只有一个Field， new Field("field", "one two three four five", Field.Store.YES, Field.Index.ANALYZED)
     assertEquals("exact match", 1, hits.length);
+    //wangxc 这个check刚看了下， 里面很多的check, 都check了些什么？为什么单单在PhraseQuery里要check那么多东西？
     QueryUtils.check(query,searcher);
 
 
@@ -126,8 +132,8 @@ public class TestPhraseQuery extends LuceneTestCase {
     query.add(new Term("field", "two"));
     query.add(new Term("field", "one"));
     hits = searcher.search(query, null, 1000).scoreDocs;
-    assertEquals("reverse not exact", 0, hits.length);
-    QueryUtils.check(query,searcher);
+    assertEquals("reverse not exact", 0, hits.length);//wangxc 这个有些意外。 据以往的理解（term之间不分前后顺序），这个是可以查到的。 怎么查不到了？
+    QueryUtils.check(query,searcher);//wangxc 先放过这个。 以后再细看。
   }
 
   public void testSlop1() throws Exception {
