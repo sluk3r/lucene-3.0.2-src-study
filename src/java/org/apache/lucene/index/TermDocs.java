@@ -29,6 +29,7 @@ import java.io.Closeable;
  @see IndexReader#termDocs()
  */
 
+//wangxc 又是一个大类！！！！
 public interface TermDocs extends Closeable {
   /** Sets this to the data for a term.
    * The enumeration is reset to the start of the data for this term.

@@ -88,7 +88,7 @@ public abstract class Query implements java.io.Serializable, Cloneable {
    * 
    * <p>
    * Only implemented by primitive queries, which re-write to themselves.
-   */
+   */ //wangxc 和下面weight的区别？
   public Weight createWeight(Searcher searcher) throws IOException {
     throw new UnsupportedOperationException();
   }
@@ -112,6 +112,7 @@ public abstract class Query implements java.io.Serializable, Cloneable {
    * a PrefixQuery will be rewritten into a BooleanQuery that consists
    * of TermQuerys.
    */
+  //wangxc 先做一步分解， 不错。
   public Query rewrite(IndexReader reader) throws IOException {
     return this;
   }

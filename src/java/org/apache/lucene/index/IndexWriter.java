@@ -239,8 +239,8 @@ public class IndexWriter implements Closeable {
   private final static int MERGE_READ_BUFFER_SIZE = 4096;
 
   // Used for printing messages
-  private static Object MESSAGE_ID_LOCK = new Object();
-  private static int MESSAGE_ID = 0;
+  private static Object MESSAGE_ID_LOCK = new Object();//wangxc 打印Message还要有Lock， 怕乱行？
+  private static int MESSAGE_ID = 0;//wangxc， MESSAGE_ID的概念是在哪用到的？
   private int messageID = -1;
   volatile private boolean hitOOM;
 
@@ -719,7 +719,7 @@ public class IndexWriter implements Closeable {
   }
 
   synchronized final boolean isOpen(boolean includePendingClose) {
-    return !(closed || (includePendingClose && closing));
+    return !(closed || (includePendingClose && closing));//wangxc  synchronized是针对两个资源closed和closing？
   }
 
   /**
@@ -2205,7 +2205,7 @@ public class IndexWriter implements Closeable {
   /** If non-null, information about merges will be printed to this.
    */
   private PrintStream infoStream = null;
-  private static PrintStream defaultInfoStream = null;
+  private static PrintStream defaultInfoStream = null;//wangxc 才发现， 这个Lucene没有用到Logger
 
   /**
    * Requests an "optimize" operation on an index, priming the index
@@ -4881,7 +4881,7 @@ public class IndexWriter implements Closeable {
      * @param limit The maximum field length
      */
     public MaxFieldLength(int limit) {
-      this("User-specified", limit);
+      this("User-specified", limit);//wangxc 这个User-specified背后的机制是？
     }
     
     public int getLimit() {

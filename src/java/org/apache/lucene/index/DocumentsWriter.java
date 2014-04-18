@@ -818,13 +818,13 @@ final class DocumentsWriter {
       // work
       final DocWriter perDoc;
       try {
-        perDoc = state.consumer.processDocument();
+        perDoc = state.consumer.processDocument();//wangxc 状态设计模式？除了这个Consumer外还有什么？
       } finally {
-        docState.clear();
+        docState.clear();//wangxc 清空了什么？
       }
 
       // This call is synchronized but fast
-      finishDocument(state, perDoc);
+      finishDocument(state, perDoc);//wangxc 都做了哪些收尾工作？
 
       success = true;
     } finally {
@@ -865,7 +865,7 @@ final class DocumentsWriter {
             // since likely it was partially added.  This
             // keeps indexing as "all or none" (atomic) when
             // adding a document:
-            addDeleteDocID(state.docState.docID);
+            addDeleteDocID(state.docState.docID);//wangxc 这个state是不是相当于Session的机制？
           }
         }
       }
@@ -1110,6 +1110,7 @@ final class DocumentsWriter {
     deletesInRAM.addBytesUsed(BYTES_PER_DEL_QUERY);
   }
 
+    //wangxc 这个是动态计算出来的。
   synchronized boolean doBalanceRAM() {
     return ramBufferSize != IndexWriter.DISABLE_AUTO_FLUSH && !bufferIsFull && (numBytesUsed+deletesInRAM.bytesUsed+deletesFlushed.bytesUsed >= ramBufferSize || numBytesAlloc >= freeTrigger);
   }
@@ -1397,7 +1398,7 @@ final class DocumentsWriter {
    * the other two.  This method just frees allocations from
    * the pools once we are over-budget, which balances the
    * pools to match the current docs. */
-  void balanceRAM() {
+  void balanceRAM() {//wangxc 这是打开内存分配与使用的大门。
 
     // We flush when we've used our target usage
     final long flushTrigger = ramBufferSize;

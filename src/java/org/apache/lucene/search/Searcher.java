@@ -32,6 +32,7 @@ import org.apache.lucene.document.FieldSelector;
  * Note that you can only access hits from a Searcher as long as it is not yet
  * closed, otherwise an IOException will be thrown.
  */
+//wangxc 第一见这个类。
 public abstract class Searcher implements Searchable {
   /** Search implementation with arbitrary sorting.  Finds
    * the top <code>n</code> hits for <code>query</code>, applying
@@ -163,6 +164,7 @@ public abstract class Searcher implements Searchable {
   abstract public TopDocs search(Weight weight, Filter filter, int n) throws IOException;
   abstract public Document doc(int i) throws CorruptIndexException, IOException;
   abstract public Document doc(int docid, FieldSelector fieldSelector) throws CorruptIndexException, IOException;
+  //wangxc rewrite时都做了什么？ 这个特性是具体哪个版本加进来的？
   abstract public Query rewrite(Query query) throws IOException;
   abstract public Explanation explain(Weight weight, int doc) throws IOException;
   abstract public TopFieldDocs search(Weight weight, Filter filter, int n, Sort sort) throws IOException;

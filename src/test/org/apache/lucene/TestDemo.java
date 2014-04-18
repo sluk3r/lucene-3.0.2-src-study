@@ -57,7 +57,7 @@ public class TestDemo extends LuceneTestCase {
     String text = "This is the text to be indexed.";
     doc.add(new Field("fieldname", text, Field.Store.YES,
         Field.Index.ANALYZED));
-    iwriter.addDocument(doc);
+    iwriter.addDocument(doc);//wangxc 这个是冰山下的一角。
     iwriter.close();
     
     // Now search the index:

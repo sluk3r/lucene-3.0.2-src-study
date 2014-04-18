@@ -67,7 +67,7 @@ final class TermScorer extends Scorer {
 
   @Override
   public void score(Collector c) throws IOException {
-    score(c, Integer.MAX_VALUE, nextDoc());
+    score(c, Integer.MAX_VALUE, nextDoc()); //wangxc 打分是一个全员参与的过程， nextDoc取一个Doc？ 这个Doc有什么特殊意义？
   }
 
   // firstDocID is ignored since nextDoc() sets 'doc'
@@ -87,7 +87,7 @@ final class TermScorer extends Scorer {
           return false;
         }
       } 
-      doc = docs[pointer];
+      doc = docs[pointer];//wangxc一个打分操作， 用boolean值能表达什么？ 最不济也应该是一个整型吧？
     }
     return true;
   }
@@ -119,6 +119,7 @@ final class TermScorer extends Scorer {
   }
   
   @Override
+  //wangxc 很长一个打分工式， 在众多的Scorer里是怎么实现的？
   public float score() {
     assert doc != -1;
     int f = freqs[pointer];

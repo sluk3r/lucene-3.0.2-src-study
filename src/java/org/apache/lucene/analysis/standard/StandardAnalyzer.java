@@ -70,7 +70,7 @@ public class StandardAnalyzer extends Analyzer {
   public StandardAnalyzer(Version matchVersion, Set<?> stopWords) {
     stopSet = stopWords;
     setOverridesTokenStreamMethod(StandardAnalyzer.class);
-    enableStopPositionIncrements = StopFilter.getEnablePositionIncrementsVersionDefault(matchVersion);
+    enableStopPositionIncrements = StopFilter.getEnablePositionIncrementsVersionDefault(matchVersion); //wangxc 这个背后有什么隐情？
     replaceInvalidAcronym = matchVersion.onOrAfter(Version.LUCENE_24);
     this.matchVersion = matchVersion;
   }

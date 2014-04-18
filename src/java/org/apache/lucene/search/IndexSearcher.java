@@ -203,13 +203,13 @@ public class IndexSearcher extends Searcher {
   @Override
   public void search(Weight weight, Filter filter, Collector collector)
       throws IOException {
-    
+    //wangxc 是不是可以理解成这样： 有Filter时， 就不再走打分了？不过， 常见的是Filter跟Query共存的情况。
     if (filter == null) {
       for (int i = 0; i < subReaders.length; i++) { // search each subreader
         collector.setNextReader(subReaders[i], docStarts[i]);
         Scorer scorer = weight.scorer(subReaders[i], !collector.acceptsDocsOutOfOrder(), true);
         if (scorer != null) {
-          scorer.score(collector);
+          scorer.score(collector);//wangxc 先拿出来再打分？ 这样情况下， 分页是怎么搞的？
         }
       }
     } else {

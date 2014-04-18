@@ -24,7 +24,7 @@ import java.io.Closeable;
 
   <p>Term enumerations are always ordered by Term.compareTo().  Each term in
   the enumeration is greater than all that precede it.  */
-
+//wangxc 感觉Lucene的包分的不是很明确， 几乎没有子包。 像TermEnum这样的有众多实现的接口应该独立出来。
 public abstract class TermEnum implements Closeable {
   /** Increments the enumeration to the next element.  True if one exists.*/
   public abstract boolean next() throws IOException;

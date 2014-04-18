@@ -46,6 +46,7 @@ import org.apache.lucene.index.IndexReader;
  * 
  * @since 2.9
  */
+//wangxc 看到N多个子类， 大概是每一个Query都有自己的Weight实现。
 public abstract class Weight implements Serializable {
 
   /**

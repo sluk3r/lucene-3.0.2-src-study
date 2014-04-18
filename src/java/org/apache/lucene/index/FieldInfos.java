@@ -33,6 +33,8 @@ import java.util.*;
  *  be adding documents at a time, with no other reader or writer threads
  *  accessing this object.
  */
+
+//wangxc 看到这样的类， 有种想重写Lucene的冲动。还有一个类叫FieldInfo.
 final class FieldInfos {
 
   // Used internally (ie not written to *.fnm files) for pre-2.9 files

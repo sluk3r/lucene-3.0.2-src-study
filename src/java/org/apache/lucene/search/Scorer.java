@@ -37,6 +37,8 @@ import java.io.IOException;
  * TopScoreDocCollector}) will not properly collect hits
  * with these scores.
  */
+
+//wangxc 又量个实现众多的接口， 从逻辑上讲打分器跟DocIdSetIterator没有直接关系吧？
 public abstract class Scorer extends DocIdSetIterator {
   private Similarity similarity;
 

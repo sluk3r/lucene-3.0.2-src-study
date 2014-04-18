@@ -91,7 +91,7 @@ public abstract class Analyzer implements Closeable {
    *  back-compat of classes that subclass a core analyzer
    *  and override tokenStream but not reusableTokenStream */
   protected void setOverridesTokenStreamMethod(Class<? extends Analyzer> baseClass) {
-    try {
+    try {//wangxc 为什么要这样做？ 第一次见
       Method m = this.getClass().getMethod("tokenStream", String.class, Reader.class);
       overridesTokenStreamMethod = m.getDeclaringClass() != baseClass;
     } catch (NoSuchMethodException nsme) {
