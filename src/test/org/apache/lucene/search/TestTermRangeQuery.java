@@ -311,11 +311,11 @@ public class TestTermRangeQuery extends LuceneTestCase {
     // wangxc 看这个issues的记录不错， 应该能从这里翻出些犄角旮旯的料。 有这么些好处：
       1. 这些料在实际工作中可以预料地应对一些表面上掩盖的问题。
       2. 以这些料出发，可以串起来深层次的研究。
-      3. 面试中，如果能应对类似的料，说明够水平了。
+      3. 面试中，如果能应对类似的料，说明够水平了。 
     */
     Query query = new TermRangeQuery("content", null, "C",
                                  false, false);
-    initializeIndex(new String[] {"A", "B", "", "C", "D"}, analyzer);
+    initializeIndex(new String[] {"A", "B", "", "C", "D"}, analyzer); //wangxc 这个空文档算什么回事？在sort时的影响？
     IndexSearcher searcher = new IndexSearcher(dir, true);
     int numHits = searcher.search(query, null, 1000).totalHits;
     // When Lucene-38 is fixed, use the assert on the next line:
