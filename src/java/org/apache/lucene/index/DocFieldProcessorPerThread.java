@@ -155,7 +155,7 @@ final class DocFieldProcessorPerThread extends DocConsumerPerThread {
   public DocumentsWriter.DocWriter processDocument() throws IOException {
 
     consumer.startDocument();
-    fieldsWriter.startDocument();
+    fieldsWriter.startDocument();//wangxc 是做些准备工作。
 
     final Document doc = docState.doc;
 
@@ -173,13 +173,14 @@ final class DocFieldProcessorPerThread extends DocConsumerPerThread {
     // seen before (eg suddenly turning on norms or
     // vectors, etc.):
 
+      //wangxc 这里Field要上场了。
     for(int i=0;i<numDocFields;i++) {
       Fieldable field = docFields.get(i);
       final String fieldName = field.name();
 
       // Make sure we have a PerField allocated
       final int hashPos = fieldName.hashCode() & hashMask;
-      DocFieldProcessorPerField fp = fieldHash[hashPos];
+      DocFieldProcessorPerField fp = fieldHash[hashPos]; //wangxc 相当于给每一个Field注册一个Processor？ 这里的循环只是一个下发任务后再触发？ 也就是说是异步地执行？ 异步执行情况下，结果怎么保证？
       while(fp != null && !fp.fieldInfo.name.equals(fieldName))
         fp = fp.next;
 
@@ -195,18 +196,18 @@ final class DocFieldProcessorPerThread extends DocConsumerPerThread {
                                       field.getOmitNorms(), false, field.getOmitTermFreqAndPositions());
 
         fp = new DocFieldProcessorPerField(this, fi);
-        fp.next = fieldHash[hashPos];
+        fp.next = fieldHash[hashPos]; //wangxc DocFieldProcessorPerField里边还有一个链表的结构？ 这个是干啥的？
         fieldHash[hashPos] = fp;
         totalFieldCount++;
 
         if (totalFieldCount >= fieldHash.length/2)
-          rehash();
+          rehash(); //wangxc 这一段的处理应该是像单例那样没有找到时生成一个，再保存起来。
       } else
-        fp.fieldInfo.update(field.isIndexed(), field.isTermVectorStored(),
+        fp.fieldInfo.update(field.isIndexed(), field.isTermVectorStored(),//wangxc update时，怎么定位？fp里已经包含了这个信息？ 这个update应该是对应着一个fieldName的多值情况。
                             field.isStorePositionWithTermVector(), field.isStoreOffsetWithTermVector(),
                             field.getOmitNorms(), false, field.getOmitTermFreqAndPositions());
 
-      if (thisFieldGen != fp.lastGen) {
+      if (thisFieldGen != fp.lastGen) {//wangxc 这个lastGen对应着什么情景？
 
         // First time we're seeing this field for this doc
         fp.fieldCount = 0;
@@ -234,6 +235,8 @@ final class DocFieldProcessorPerThread extends DocConsumerPerThread {
       }
     }
 
+      //wangxc 上面的if-else分支也是个预处理。
+
     // If we are writing vectors then we must visit
     // fields in sorted order so they are written in
     // sorted order.  TODO: we actually only need to
@@ -242,7 +245,7 @@ final class DocFieldProcessorPerThread extends DocConsumerPerThread {
     // here.
     quickSort(fields, 0, fieldCount-1);
 
-    for(int i=0;i<fieldCount;i++)
+    for(int i=0;i<fieldCount;i++) //wangxc  下面的processFields应该是正常的处理重头戏。
       fields[i].consumer.processFields(fields[i].fields, fields[i].fieldCount);
 
     if (docState.maxTermPrefix != null && docState.infoStream != null) {
@@ -253,7 +256,7 @@ final class DocFieldProcessorPerThread extends DocConsumerPerThread {
     final DocumentsWriter.DocWriter one = fieldsWriter.finishDocument();
     final DocumentsWriter.DocWriter two = consumer.finishDocument();
     if (one == null) {
-      return two;
+      return two;//wangxc 只能是呵呵了。one和two的颠倒。
     } else if (two == null) {
       return one;
     } else {
@@ -267,10 +270,11 @@ final class DocFieldProcessorPerThread extends DocConsumerPerThread {
     }
   }
 
+    //wangxc 怎么不直接用JDK自带的排序？
   void quickSort(DocFieldProcessorPerField[] array, int lo, int hi) {
     if (lo >= hi)
       return;
-    else if (hi == 1+lo) {
+    else if (hi == 1+lo) {//wangxc 如果只有两个元素时。
       if (array[lo].fieldInfo.name.compareTo(array[hi].fieldInfo.name) > 0) {
         final DocFieldProcessorPerField tmp = array[lo];
         array[lo] = array[hi];
@@ -279,7 +283,7 @@ final class DocFieldProcessorPerThread extends DocConsumerPerThread {
       return;
     }
 
-    int mid = (lo + hi) >>> 1;
+    int mid = (lo + hi) >>> 1;//wangxc 不用除法，而直接用右移。
 
     if (array[lo].fieldInfo.name.compareTo(array[mid].fieldInfo.name) > 0) {
       DocFieldProcessorPerField tmp = array[lo];

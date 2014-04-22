@@ -1997,7 +1997,7 @@ public class IndexWriter implements Closeable {
           }
         }
       }
-      if (doFlush)
+      if (doFlush) //wangxc  flush与否应该是由client自己指定而不由上面的addDocument计算吧？
         flush(true, false, false);
     } catch (OutOfMemoryError oom) {
       handleOOM(oom, "addDocument");

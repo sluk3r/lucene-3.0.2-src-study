@@ -794,7 +794,7 @@ final class DocumentsWriter {
    * flush. */
   boolean addDocument(Document doc, Analyzer analyzer)
     throws CorruptIndexException, IOException {
-    return updateDocument(doc, analyzer, null);
+    return updateDocument(doc, analyzer, null);//wangxc 这里的名字叫updateDocument？ 这个名字的意义 ？
   }
 
   boolean updateDocument(Term t, Document doc, Analyzer analyzer)
@@ -806,11 +806,12 @@ final class DocumentsWriter {
     throws CorruptIndexException, IOException {
 
     // This call is synchronized but fast
+      //wangxc 看到这， 就多了一层设计： 线程安全方面的安全、普通的设计模式、自身的算法。 先重点看它自身的算法实现。
     final DocumentsWriterThreadState state = getThreadState(doc, delTerm);
 
     final DocState docState = state.docState;
     docState.doc = doc;
-    docState.analyzer = analyzer;
+    docState.analyzer = analyzer;//wangxc 这个analyzer还是不全局的？
 
     boolean success = false;
     try {

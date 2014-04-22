@@ -251,7 +251,7 @@ final class FieldInfos {
     name = StringHelper.intern(name);
     FieldInfo fi = new FieldInfo(name, isIndexed, byNumber.size(), storeTermVector, storePositionWithTermVector,
                                  storeOffsetWithTermVector, omitNorms, storePayloads, omitTermFreqAndPositions);
-    byNumber.add(fi);
+    byNumber.add(fi);//wangxc 两种存储方式
     byName.put(name, fi);
     return fi;
   }

@@ -17,6 +17,7 @@ package org.apache.lucene.index;
  * limitations under the License.
  */
 
+//wangxc  跟Field的关系？ 什么时候用到？
 final class FieldInfo {
   String name;
   boolean isIndexed;
@@ -61,7 +62,8 @@ final class FieldInfo {
                          storeOffsetWithTermVector, omitNorms, storePayloads, omitTermFreqAndPositions);
   }
 
-  void update(boolean isIndexed, boolean storeTermVector, boolean storePositionWithTermVector, 
+  //wangxc 什么情况下， 才做Update操作？ 这个update代表了什么？
+    void update(boolean isIndexed, boolean storeTermVector, boolean storePositionWithTermVector,
               boolean storeOffsetWithTermVector, boolean omitNorms, boolean storePayloads, boolean omitTermFreqAndPositions) {
     if (this.isIndexed != isIndexed) {
       this.isIndexed = true;                      // once indexed, always index

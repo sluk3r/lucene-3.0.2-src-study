@@ -41,7 +41,7 @@ final class StoredFieldsWriterPerThread {
       // exception while writing stored fields into
       // localFieldsWriter:
       doc.reset();
-      doc.docID = docState.docID;
+      doc.docID = docState.docID;//wangxc 又是这个。
     }
   }
 

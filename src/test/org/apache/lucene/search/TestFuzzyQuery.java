@@ -1,5 +1,4 @@
 package org.apache.lucene.search;
-
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -17,9 +16,7 @@ package org.apache.lucene.search;
  * limitations under the License.
  */
 
-import java.util.Set;
 import java.util.List;
-import java.util.HashSet;
 import java.util.Arrays;
 import java.io.IOException;
 
@@ -52,16 +49,18 @@ public class TestFuzzyQuery extends LuceneTestCase {
     addDoc("aabbb", writer);
     addDoc("abbbb", writer);
     addDoc("bbbbb", writer);
-    addDoc("ddddd", writer);
-    writer.optimize();
+    addDoc("ddddd", writer); //wangxc 这是要看Fuuzy到什么程度么？
+    writer.optimize(); //wangxc 这里怎么要特殊地再调用optimize
     writer.close();
     IndexSearcher searcher = new IndexSearcher(directory, true);
 
-    FuzzyQuery query = new FuzzyQuery(new Term("field", "aaaaa"), FuzzyQuery.defaultMinSimilarity, 0);   
+    FuzzyQuery query = new FuzzyQuery(new Term("field", "aaaaa"), FuzzyQuery.defaultMinSimilarity, 0);
     ScoreDoc[] hits = searcher.search(query, null, 1000).scoreDocs;
-    assertEquals(3, hits.length);
+    assertEquals(3, hits.length);//wangxc 上面是三个doc， 感觉跟prefixQuery没什么区别吧？
     
     // same with prefix
+    //wangxc  下面这一系列的测试是针对啥的？ 最后一个参数值的增长代表了什么？ 最后一个参数是prefixLength。这样就更代表不能区别跟Prefix的区别了。
+    //wangxc 看书时， 重点看下跟PrefixQuery的区别问题。使用上的注意。
     query = new FuzzyQuery(new Term("field", "aaaaa"), FuzzyQuery.defaultMinSimilarity, 1);   
     hits = searcher.search(query, null, 1000).scoreDocs;
     assertEquals(3, hits.length);
@@ -82,6 +81,8 @@ public class TestFuzzyQuery extends LuceneTestCase {
     assertEquals(1, hits.length);
     
     // test scoring
+    //wangxc 下面的0代表什么？
+    //wangxc  这个测试代表了， 不仅仅是前缀？从后面匹配也行？
     query = new FuzzyQuery(new Term("field", "bbbbb"), FuzzyQuery.defaultMinSimilarity, 0);   
     hits = searcher.search(query, null, 1000).scoreDocs;
     assertEquals("3 documents should match", 3, hits.length);
@@ -89,13 +90,13 @@ public class TestFuzzyQuery extends LuceneTestCase {
     for (int i = 0; i < hits.length; i++) {
       final String term = searcher.doc(hits[i].doc).get("field");
       //System.out.println(hits[i].score);
-      assertEquals(order.get(i), term);
+      assertEquals(order.get(i), term);//wangxc 从查询的最终结果也验证了上面的猜想。 
     }
 
     // test BooleanQuery.maxClauseCount
     int savedClauseCount = BooleanQuery.getMaxClauseCount();
     try {
-      BooleanQuery.setMaxClauseCount(2);
+      BooleanQuery.setMaxClauseCount(2);//wangxc 这个MaxClauseCount对FuzzyQuery会有什么影响么？
       // This query would normally return 3 documents, because 3 terms match (see above):
       query = new FuzzyQuery(new Term("field", "bbbbb"), FuzzyQuery.defaultMinSimilarity, 0);   
       hits = searcher.search(query, null, 1000).scoreDocs;

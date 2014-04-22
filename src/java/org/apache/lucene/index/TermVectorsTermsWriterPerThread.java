@@ -19,6 +19,7 @@ package org.apache.lucene.index;
 
 import org.apache.lucene.util.UnicodeUtil;
 
+//wangxc 这样的PerThread命名与设计是不是表明这些类是非线程安全的？ 只能在单个线程里用？
 final class TermVectorsTermsWriterPerThread extends TermsHashConsumerPerThread {
 
   final TermVectorsTermsWriter termsWriter;
@@ -42,9 +43,9 @@ final class TermVectorsTermsWriterPerThread extends TermsHashConsumerPerThread {
   @Override
   public void startDocument() {
     assert clearLastVectorFieldName();
-    if (doc != null) {
+    if (doc != null) {//wangxc doc什么情况下不是null？ 不是null对应着缓存？
       doc.reset();
-      doc.docID = docState.docID;
+      doc.docID = docState.docID;//wangxc docState里的docID是从哪来的？
     }
   }
 
