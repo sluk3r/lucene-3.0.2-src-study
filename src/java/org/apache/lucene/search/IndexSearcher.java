@@ -268,7 +268,7 @@ public class IndexSearcher extends Searcher {
 
   @Override
   public Query rewrite(Query original) throws IOException {
-    Query query = original;
+    Query query = original;//wangxc 看来要rewriteN次？ 什么因素？
     for (Query rewrittenQuery = query.rewrite(reader); rewrittenQuery != query;
          rewrittenQuery = query.rewrite(reader)) {
       query = rewrittenQuery;

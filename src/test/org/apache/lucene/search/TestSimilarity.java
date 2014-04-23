@@ -62,6 +62,7 @@ public class TestSimilarity extends LuceneTestCase {
     }
   }
 
+    //wangxc 能测出什么来？ 应该是什么样？说明了什么问题？
   public void testSimilarity() throws Exception {
     RAMDirectory store = new RAMDirectory();
     IndexWriter writer = new IndexWriter(store, new SimpleAnalyzer(), true, 

@@ -68,14 +68,15 @@ public class FuzzyQuery extends MultiTermQuery {
       throw new IllegalArgumentException("minimumSimilarity < 0");
     if (prefixLength < 0)
       throw new IllegalArgumentException("prefixLength < 0");
-    
+
+      //wangxc 这个判断是什么个意思？  下面的termLongEnough有什么用？ 只有在rewrite时用到。
     if (term.text().length() > 1.0f / (1.0f - minimumSimilarity)) {
       this.termLongEnough = true;
     }
     
     this.minimumSimilarity = minimumSimilarity;
     this.prefixLength = prefixLength;
-    rewriteMethod = SCORING_BOOLEAN_QUERY_REWRITE;
+    rewriteMethod = SCORING_BOOLEAN_QUERY_REWRITE;//wangxc 还有一个专门的类RewriteMethod
   }
   
   /**
@@ -111,7 +112,7 @@ public class FuzzyQuery extends MultiTermQuery {
 
   @Override
   protected FilteredTermEnum getEnum(IndexReader reader) throws IOException {
-    return new FuzzyTermEnum(reader, getTerm(), minimumSimilarity, prefixLength);
+    return new FuzzyTermEnum(reader, getTerm(), minimumSimilarity, prefixLength);//wangxc 两个重要的参数minimumSimilarity和prefixLength上场了。
   }
   
   /**
@@ -122,11 +123,12 @@ public class FuzzyQuery extends MultiTermQuery {
   }
 
   @Override
-  public void setRewriteMethod(RewriteMethod method) {
+  public void setRewriteMethod(RewriteMethod method) {//wangxc 为什么FuzzyQuery不能再rewrite?
     throw new UnsupportedOperationException("FuzzyQuery cannot change rewrite method");
   }
   
   @Override
+  //wangxc 看来复杂Query的关键还是这个rewrite方法。  怎么还需要参数IndexReader？
   public Query rewrite(IndexReader reader) throws IOException {
     if(!termLongEnough) {  // can only match if it's exact
       return new TermQuery(term);
@@ -135,7 +137,7 @@ public class FuzzyQuery extends MultiTermQuery {
     int maxSize = BooleanQuery.getMaxClauseCount();
     PriorityQueue<ScoreTerm> stQueue = new PriorityQueue<ScoreTerm>();
     FilteredTermEnum enumerator = getEnum(reader);
-    try {
+    try {//wangxc 下面的是一串排序操作？
       ScoreTerm st = new ScoreTerm();
       do {
         final Term t = enumerator.term();
@@ -154,7 +156,7 @@ public class FuzzyQuery extends MultiTermQuery {
     } finally {
       enumerator.close();
     }
-    
+    //wangxc 转成BooleanQuery
     BooleanQuery query = new BooleanQuery(true);
     for (final ScoreTerm st : stQueue) {
       TermQuery tq = new TermQuery(st.term);      // found a match

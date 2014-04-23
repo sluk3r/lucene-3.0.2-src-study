@@ -145,7 +145,7 @@ public abstract class Searcher implements Searchable {
    * @return new weight
    */
   protected Weight createWeight(Query query) throws IOException {
-    return query.weight(this);
+    return query.weight(this);//wangxc 怎么要转成Weight？ Query跟Weight在接口定义上有什么不同？
   }
 
   // inherit javadoc

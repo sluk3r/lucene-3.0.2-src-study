@@ -54,29 +54,29 @@ public class TestFuzzyQuery extends LuceneTestCase {
     writer.close();
     IndexSearcher searcher = new IndexSearcher(directory, true);
 
-    FuzzyQuery query = new FuzzyQuery(new Term("field", "aaaaa"), FuzzyQuery.defaultMinSimilarity, 0);
+    FuzzyQuery query = new FuzzyQuery(new Term("field", "aaaaa"), FuzzyQuery.defaultMinSimilarity, 0); //wangxc defaultMinSimilarity是0.5f，  这个值是怎么体现出来的？这里的0跟下午的3是怎么关联的？
     ScoreDoc[] hits = searcher.search(query, null, 1000).scoreDocs;
-    assertEquals(3, hits.length);//wangxc 上面是三个doc， 感觉跟prefixQuery没什么区别吧？
+    assertEquals(3, hits.length);//wangxc 上面是三个doc， 感觉跟prefixQuery没什么区别吧？ 下面的aabbb怎么没匹配上？
     
     // same with prefix
     //wangxc  下面这一系列的测试是针对啥的？ 最后一个参数值的增长代表了什么？ 最后一个参数是prefixLength。这样就更代表不能区别跟Prefix的区别了。
     //wangxc 看书时， 重点看下跟PrefixQuery的区别问题。使用上的注意。
-    query = new FuzzyQuery(new Term("field", "aaaaa"), FuzzyQuery.defaultMinSimilarity, 1);   
+    query = new FuzzyQuery(new Term("field", "aaaaa"), FuzzyQuery.defaultMinSimilarity, 1);   //wangxc  这个1是怎么体现的？ prefixLength length of common (non-fuzzy) prefix。 应该是5个查询到的结果？
     hits = searcher.search(query, null, 1000).scoreDocs;
     assertEquals(3, hits.length);
-    query = new FuzzyQuery(new Term("field", "aaaaa"), FuzzyQuery.defaultMinSimilarity, 2);   
+    query = new FuzzyQuery(new Term("field", "aaaaa"), FuzzyQuery.defaultMinSimilarity, 2);  //wangxc 应该查出4个来吧。
     hits = searcher.search(query, null, 1000).scoreDocs;
     assertEquals(3, hits.length);
     query = new FuzzyQuery(new Term("field", "aaaaa"), FuzzyQuery.defaultMinSimilarity, 3);   
     hits = searcher.search(query, null, 1000).scoreDocs;
     assertEquals(3, hits.length);
-    query = new FuzzyQuery(new Term("field", "aaaaa"), FuzzyQuery.defaultMinSimilarity, 4);   
+    query = new FuzzyQuery(new Term("field", "aaaaa"), FuzzyQuery.defaultMinSimilarity, 4);  //wangxc 4个时查出两个来， 正常。
     hits = searcher.search(query, null, 1000).scoreDocs;
     assertEquals(2, hits.length);
-    query = new FuzzyQuery(new Term("field", "aaaaa"), FuzzyQuery.defaultMinSimilarity, 5);   
+    query = new FuzzyQuery(new Term("field", "aaaaa"), FuzzyQuery.defaultMinSimilarity, 5);//wangxc 这个是正解。 跟现在(2014-4-23)的理解很合适。
     hits = searcher.search(query, null, 1000).scoreDocs;
     assertEquals(1, hits.length);
-    query = new FuzzyQuery(new Term("field", "aaaaa"), FuzzyQuery.defaultMinSimilarity, 6);   
+    query = new FuzzyQuery(new Term("field", "aaaaa"), FuzzyQuery.defaultMinSimilarity, 6); //wangxc 查询“aaaaa”的长度是5， 上面doc的“aaaaa”的长度也是5， 这里设置成6有还能查出来？
     hits = searcher.search(query, null, 1000).scoreDocs;
     assertEquals(1, hits.length);
     

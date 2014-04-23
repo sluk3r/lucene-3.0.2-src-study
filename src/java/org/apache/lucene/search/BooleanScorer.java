@@ -325,7 +325,7 @@ final class BooleanScorer extends Scorer {
     return current.score * coordFactors[current.coord];
   }
 
-  @Override
+  @Override //wangxc 是不是有这样的关系： Query、Weight、TernEnum，再加上这个Scorer
   public void score(Collector collector) throws IOException {
     score(collector, Integer.MAX_VALUE, nextDoc());
   }

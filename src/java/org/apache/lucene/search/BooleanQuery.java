@@ -359,7 +359,7 @@ public class BooleanQuery extends Query implements Iterable<BooleanClause> {
 
   @Override
   public Weight createWeight(Searcher searcher) throws IOException {
-    return new BooleanWeight(searcher);
+    return new BooleanWeight(searcher);//wangxc 只是干巴巴地生成一个BooleanWeight？ 没有带着Query自身的信息？
   }
 
   @Override
