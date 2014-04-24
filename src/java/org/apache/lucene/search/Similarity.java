@@ -525,6 +525,8 @@ import java.util.IdentityHashMap;
  * @see org.apache.lucene.index.IndexWriter#setSimilarity(Similarity)
  * @see Searcher#setSimilarity(Similarity)
  */
+
+//wangxc 终于找到Scoring相关的总API了。
 public abstract class Similarity implements Serializable {
   
   /**
@@ -761,6 +763,7 @@ public abstract class Similarity implements Serializable {
    *         for each term.
    * @throws IOException
    */
+  //wangxc 这时怎么把IDFExplanation单独提出来？ 放到当前类里？
   public IDFExplanation idfExplain(Collection<Term> terms, Searcher searcher) throws IOException {
     final int max = searcher.maxDoc();
     float idf = 0.0f;
