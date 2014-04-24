@@ -137,6 +137,7 @@ public class TestFuzzyQuery extends LuceneTestCase {
     assertEquals(searcher.doc(hits[2].doc).get("field"), ("aaabb"));
     
     // now with prefix
+    //wangxc 这里是prefix，前面的是测试是啥？  还是看不出值是1的prefix在search中起的作用。
     query = new FuzzyQuery(new Term("field", "aaaac"), FuzzyQuery.defaultMinSimilarity, 1);   
     hits = searcher.search(query, null, 1000).scoreDocs;
     assertEquals(3, hits.length);
