@@ -59,16 +59,20 @@ public class TestFieldCache extends LuceneTestCase {
     }
     writer.close();
     reader = IndexReader.open(directory, true);
+    //wangxc 这个Cache在建索引时没有体现出来？
   }
 
   public void testInfoStream() throws Exception {
     try {
+        //wangxc 现在内置的也就是这一个实现了。 在具体场景下的使用是怎样的？ 大概可以多一Cache层。 但围绕Cache相关的问题（同步？）是怎么解决的？ 这些问题在LIA里应该会有相应的说明。
+        //wangxc，这个类的定义是在search文件夹下。
+        //wangxc, 从doc看，这个Cache是用在term values方面， 哪些因素让它对termValues情有独钟？
       FieldCache cache = FieldCache.DEFAULT;
       ByteArrayOutputStream bos = new ByteArrayOutputStream(1024);
       cache.setInfoStream(new PrintStream(bos));
       double [] doubles = cache.getDoubles(reader, "theDouble");
-      float [] floats = cache.getFloats(reader, "theDouble");
-      assertTrue(bos.toString().indexOf("WARNING") != -1);
+      float [] floats = cache.getFloats(reader, "theDouble"); //wangxc 这两个数组并没有用到？
+      assertTrue(bos.toString().indexOf("WARNING") != -1);//wangxc 这个用例说明了什么？
     } finally {
       FieldCache.DEFAULT.purgeAllCaches();
     }
