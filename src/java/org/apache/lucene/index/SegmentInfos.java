@@ -335,7 +335,7 @@ public final class SegmentInfos extends Vector<SegmentInfo> {
     boolean success = false;
 
     try {
-      segnOutput.writeInt(CURRENT_FORMAT); // write FORMAT
+      segnOutput.writeInt(CURRENT_FORMAT); // write FORMAT //wangxc 完全是字节方式，而没有像数据库里那搞一套字段名。
       segnOutput.writeLong(++version); // every write changes
                                    // the index
       segnOutput.writeInt(counter); // write counter

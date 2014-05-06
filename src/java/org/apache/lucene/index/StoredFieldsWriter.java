@@ -167,7 +167,7 @@ final class StoredFieldsWriter {
 
   class PerDoc extends DocumentsWriter.DocWriter {
     final DocumentsWriter.PerDocBuffer buffer = docWriter.newPerDocBuffer();
-    RAMOutputStream fdt = new RAMOutputStream(buffer);//wangxc 用这个做flush前的那个缓存？也就是说，在flush前，那些信息是写在这样的RAMOutputStream里的。
+    RAMOutputStream fdt = new RAMOutputStream(buffer);//wangxc 用这个做flush前的那个缓存？也就是说，在flush前，那些信息是写在这样的RAMOutputStream里的。  还里还有一层缓存 2014-5-6 17:02:53
     int numStoredFields;
 
     void reset() {

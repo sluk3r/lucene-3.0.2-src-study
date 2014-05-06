@@ -94,7 +94,7 @@ public class Explanation implements java.io.Serializable {
     buffer.append(getSummary());
     buffer.append("\n");
 
-    Explanation[] details = getDetails();
+    Explanation[] details = getDetails();//wangxc 这里的detail是个什么概念？ 会有哪些？ 看声明， 这是一个ArrayList<Explanation>。 都添加了哪些Explanation？
     if (details != null) {
       for (int i = 0 ; i < details.length; i++) {
         buffer.append(details[i].toString(depth+1));

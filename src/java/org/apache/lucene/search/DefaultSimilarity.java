@@ -56,7 +56,7 @@ public class DefaultSimilarity extends Similarity {
   /** Implemented as <code>sqrt(freq)</code>. */
   @Override
   public float tf(float freq) {
-    return (float)Math.sqrt(freq);
+    return (float)Math.sqrt(freq); //wangxc   这里搞一个平方值？ 有什么用？
   }
     
   /** Implemented as <code>1 / (distance + 1)</code>. */

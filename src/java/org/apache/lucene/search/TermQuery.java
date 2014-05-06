@@ -117,13 +117,14 @@ public class TermQuery extends Query {
       TermDocs termDocs = reader.termDocs(term);
       if (termDocs != null) {
         try {
+            //wangxc 从意思上来看， skipTo方法返回true时， TermDocs的doc()方法正对应的doc就是当前的doc？
           if (termDocs.skipTo(doc) && termDocs.doc() == doc) {
             tf = termDocs.freq();
           }
         } finally {
-          termDocs.close();
+          termDocs.close();//wangxc 这个也可以关掉？ 会对应着Directory的打开？
         }
-        tfExplanation.setValue(similarity.tf(tf));
+        tfExplanation.setValue(similarity.tf(tf));//wangxc 一个tf值还能经过similarity处理下？ 原因？都做了哪些处理？
         tfExplanation.setDescription("tf(termFreq("+term+")="+tf+")");
       } else {
         tfExplanation.setValue(0.0f);

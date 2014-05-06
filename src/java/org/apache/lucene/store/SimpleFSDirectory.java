@@ -184,7 +184,7 @@ public class SimpleFSDirectory extends FSDirectory {
     /** output methods: */
     @Override
     public void flushBuffer(byte[] b, int offset, int size) throws IOException {
-      file.write(b, offset, size);
+      file.write(b, offset, size); //wangxc也是第一次见这个RandomAccessFile的使用， 貌似跟常见的File一点关系都没有。
     }
     @Override
     public void close() throws IOException {

@@ -1508,6 +1508,9 @@ final class DocumentsWriter {
 
   final WaitQueue waitQueue = new WaitQueue();
 
+    //wangxc 这个应该是基于File层次上Buffer后的另一个Buffer。这两层buffer的配合？
+    //wangxc 一篇文章， 对这方面的理解应该能好一些， http://www.fromdev.com/2008/08/lucene-asynchronous-index-writer-for_28.html
+    //wangxc 隐隐地感觉到， 怎么高效地把索引结果写到磁盘是个大事。
   private class WaitQueue {
     DocWriter[] waiting;
     int nextWriteDocID;
@@ -1553,7 +1556,7 @@ final class DocumentsWriter {
       assert doc == skipDocWriter || nextWriteDocID == doc.docID;
       boolean success = false;
       try {
-        doc.finish();
+        doc.finish();//wangxc 这里除了这个finish外， 好像没有什么特殊的操作了。 看了DocWriter的子类， 它负责往
         nextWriteDocID++;
         numDocsInStore++;
         nextWriteLoc++;
@@ -1569,12 +1572,12 @@ final class DocumentsWriter {
 
     synchronized public boolean add(DocWriter doc) throws IOException {
 
-      assert doc.docID >= nextWriteDocID;
+      assert doc.docID >= nextWriteDocID; //wangxc 这nextWriteDocID暴露Id的生成策略？
 
-      if (doc.docID == nextWriteDocID) {
+      if (doc.docID == nextWriteDocID) { //wangxc 这个的等于或不等于有什么区别么？
         writeDocument(doc);
         while(true) {
-          doc = waiting[nextWriteLoc];
+          doc = waiting[nextWriteLoc];//wangxc 这里的doc跟参数传来的doc有什么关联？
           if (doc != null) {
             numWaiting--;
             waiting[nextWriteLoc] = null;
