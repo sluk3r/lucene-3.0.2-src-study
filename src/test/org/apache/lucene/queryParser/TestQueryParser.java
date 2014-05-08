@@ -1067,4 +1067,46 @@ public class TestQueryParser extends LocalizedTestCase {
     }
   }
 
+
+    /*
+    LUCENE-2987
+    1, bug还是Open状态，但我用3.0.2想重现， 没重现出来。
+    2，看到这个Patch(https://issues.apache.org/jira/secure/attachment/12510156/LUCENE-2987.patch)，这个以附件方式放在这是什么意思？ 是为说明bug的存在？还是表明一个解决方案。
+        2.1 提到了LUCENE-2987， 但从现在版本(3.0.2，这个版本还是bug描述里明确提到会影响的版本)里搜没搜到这个词。
+    3，看上面的patch是跟JavaCC有关的。 解决这个bug要了解这方面的东西。
+     */
+    public void testNullPointerExceptionWhenInvalidQuery() {
+        BooleanQuery.setMaxClauseCount(5);
+        try {
+            QueryParser qp = new QueryParser(Version.LUCENE_CURRENT, "field", new StandardAnalyzer(Version.LUCENE_CURRENT));
+            qp.parse("field: (4 or 6 or 8)");
+        } catch (ParseException expected) {
+            // too many boolean clauses, so ParseException is expected
+            expected.printStackTrace();
+        }
+    }
+
+
+    /*
+    LUCENE-2916
+     */
+    public void testUnescapedInternalOperators() {
+        try {
+            _doTestQueryParse("temp:-10");
+            fail("please switch public QueryParser(CharStream) to be protected");
+        } catch (ParseException e) {
+            // expected
+        }
+
+        try {
+            _doTestQueryParse("temp:10");
+        } catch (ParseException e) {
+            fail("Should be correct");
+        }
+    }
+
+    private void _doTestQueryParse(String query) throws ParseException {
+        QueryParser qp = new QueryParser(Version.LUCENE_CURRENT, "temp", new StandardAnalyzer(Version.LUCENE_CURRENT));
+        qp.parse(query);
+    }
 }
