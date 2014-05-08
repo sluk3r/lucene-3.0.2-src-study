@@ -51,7 +51,7 @@ import org.apache.lucene.util.ThreadInterruptedException;
  *
  * Each added document is passed to the {@link DocConsumer},
  * which in turn processes the document and interacts with
- * other consumers in the indexing chain.  Certain
+ * other consumers in the indexing chain.  Certain  //wangxc 这里提到indexing chain的全貌是怎样的？ “other consumers”又有哪些？ 2014-5-7 10:36:59
  * consumers, like {@link StoredFieldsWriter} and {@link
  * TermVectorsTermsWriter}, digest a document and
  * immediately write bytes to the "doc store" files (ie,
@@ -74,17 +74,18 @@ import org.apache.lucene.util.ThreadInterruptedException;
  * which allocates a ThreadState for this thread.  The same
  * thread will get the same ThreadState over time (thread
  * affinity) so that if there are consistent patterns (for
- * example each thread is indexing a different content
+ * example each thread is indexing a different content //wangxc 这个different有什么特殊的影响？ 跟下面提到的RAM的利用有什么关联？
  * source) then we make better use of RAM.  Then
- * processDocument is called on that ThreadState without
+ * processDocument is called on that ThreadState without //wangxc 这个ThreadState是不是一种常见的线程安全的设计模式？ 把一些共性资源提取出来，放到这个State里， 然后只是每个线程自己访问。这样就少了资源冲突问题。 2014-5-8 10:06:41
  * synchronization (most of the "heavy lifting" is in this
  * call).  Finally the synchronized "finishDocument" is
  * called to flush changes to the directory.
  *
- * When flush is called by IndexWriter we forcefully idle
+ * When flush is called by IndexWriter we forcefully idle //wangxc 这个forcefully地清空是在哪实现的？2014-5-8 10:22:10
  * all threads and flush only once they are all idle.  This
  * means you can call flush with a given thread even while
- * other threads are actively adding/deleting documents.
+ * other threads are actively adding/deleting documents.//wangxc 怎么搞一个多线程的环境来模拟这个情况 2014-5-8 10:22:59  感觉上， 每个线程里应该是有自己完全独立的lucene对象，这些对象之间没有内存的共享。 Spring中有没有对Lucene的支持？ 具体是怎样实现的？ 有一个专门的开源实现：http://sourceforge.net/projects/spring-lucene/support。 扫了它的文档，大多是跟Schema和Directory相关的配置， 没有涉及到线程的。
+ * //wangxc 最起码多线程之间是有共用的Directory，以存放索引结果。
  *
  *
  * Exceptions:
@@ -98,7 +99,7 @@ import org.apache.lucene.util.ThreadInterruptedException;
  * exception while appending to the in-memory posting lists
  * can corrupt that posting list.  We call such exceptions
  * "aborting exceptions".  In these cases we must call
- * abort() to discard all docs added since the last flush.
+ * abort() to discard all docs added since the last flush. //wangxc 这里相关的一个问题： 如果磁盘满了引起异常， 此时将要保存的结果会有什么宿命？ abort操作会有什么效果？2014-5-8 10:43:00
  *
  * All other exceptions ("non-aborting exceptions") can
  * still partially update the index structures.  These
@@ -109,6 +110,8 @@ import org.apache.lucene.util.ThreadInterruptedException;
  * or none") added to the index.
  */
 
+
+//wangxc 这个DocumentsWriter是跟IndexWriter绑定的， 也就是由IndexWriter负责生成。
 final class DocumentsWriter {
 
   IndexWriter writer;
@@ -225,7 +228,8 @@ final class DocumentsWriter {
   abstract static class IndexingChain {
     abstract DocConsumer getChain(DocumentsWriter documentsWriter);
   }
-  
+
+  //wangxc 发现这个IndexingChain不错。
   static final IndexingChain DefaultIndexingChain = new IndexingChain() {
 
     @Override
@@ -233,7 +237,7 @@ final class DocumentsWriter {
       /*
       This is the current indexing chain:
 
-      DocConsumer / DocConsumerPerThread
+      DocConsumer / DocConsumerPerThread //wangxc 这个斜杠前后有什么联系？  这段注释跟下面的代码组建是怎么地对应上的？
         --> code: DocFieldProcessor / DocFieldProcessorPerThread
           --> DocFieldConsumer / DocFieldConsumerPerThread / DocFieldConsumerPerField
             --> code: DocFieldConsumers / DocFieldConsumersPerThread / DocFieldConsumersPerField
@@ -250,6 +254,7 @@ final class DocumentsWriter {
 
     // Build up indexing chain:
 
+      //wangxc 这些代码的组建中没有考虑到Field里定义的那些跟Store、Index相关的设置？
       final TermsHashConsumer termVectorsWriter = new TermVectorsTermsWriter(documentsWriter);
       final TermsHashConsumer freqProxWriter = new FreqProxTermsWriter();
 
@@ -825,14 +830,14 @@ final class DocumentsWriter {
       }
 
       // This call is synchronized but fast
-      finishDocument(state, perDoc);//wangxc 都做了哪些收尾工作？
+      finishDocument(state, perDoc);//wangxc 都做了哪些收尾工作？ 这里的finishDocument是不是把索引（索引的过程是上面的processDocument负责的？从断点来看， Analyzer的tokenStream方法是processDocument方法里执行的。）的结果写入磁盘？
 
       success = true;
     } finally {
       if (!success) {
         synchronized(this) {
 
-          if (aborting) {
+          if (aborting) { //wangxc 是在DocInverterPerField类的docState.docWriter.setAborting();里设置的？
             state.isIdle = true;
             notifyAll();
             abort();
@@ -1155,7 +1160,7 @@ final class DocumentsWriter {
         doPause = waitQueue.add(skipDocWriter);
       }
 
-      if (doPause)
+      if (doPause) //wangxc 这里的核心功能好像只是往waitQueue里放入要写的内容。 waitQueue里的内容什么时候来取？ 名字上是叫waitQueue，实质上是往Buffer里写，如果满了后， 就自动地flush下？ 2014-5-8 14:28:18
         waitForWaitQueue();
 
       if (bufferIsFull && !flushPending) {

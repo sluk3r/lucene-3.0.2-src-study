@@ -21,7 +21,7 @@ import java.io.IOException;
 import org.apache.lucene.store.RAMOutputStream;
 import org.apache.lucene.util.ArrayUtil;
 
-/** This is a DocFieldConsumer that writes stored fields. */
+/** This is a DocFieldConsumer that writes stored fields. */  //wangxc 这些Consumer也没有一个统一的接口， 看着费劲。
 final class StoredFieldsWriter {
 
   FieldsWriter fieldsWriter;

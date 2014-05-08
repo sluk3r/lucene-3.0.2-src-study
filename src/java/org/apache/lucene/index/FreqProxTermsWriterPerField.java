@@ -146,7 +146,7 @@ final class FreqProxTermsWriterPerField extends TermsHashConsumerPerField implem
         // Now that we know doc freq for previous doc,
         // write it & lastDocCode
         if (1 == p.docFreq)
-          termsHashPerField.writeVInt(0, p.lastDocCode|1);
+          termsHashPerField.writeVInt(0, p.lastDocCode|1); //wangxc 这么多地writeVInt体现出：并不是所有的东西都放到RawPostingList里。
         else {
           termsHashPerField.writeVInt(0, p.lastDocCode);
           termsHashPerField.writeVInt(0, p.docFreq);

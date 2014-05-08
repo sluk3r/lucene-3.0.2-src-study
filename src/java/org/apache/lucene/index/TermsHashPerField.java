@@ -351,7 +351,7 @@ final class TermsHashPerField extends InvertedDocConsumerPerField {
 
     // Compute hashcode & replace any invalid UTF16 sequences
     int downto = tokenTextLen;
-    int code = 0;
+    int code = 0;//wangxc 这个code里记了什么？
     while (downto > 0) {
       char ch = tokenText[--downto];
 
@@ -394,7 +394,7 @@ final class TermsHashPerField extends InvertedDocConsumerPerField {
         code += inc;
         hashPos = code & postingsHashMask;
         p = postingsHash[hashPos];
-      } while (p != null && !postingEquals(tokenText, tokenTextLen));
+      } while (p != null && !postingEquals(tokenText, tokenTextLen)); //wangxc 已经跟当前的tokenText不一致了， 还要接着搜？
     }
 
     if (p == null) {
@@ -465,11 +465,11 @@ final class TermsHashPerField extends InvertedDocConsumerPerField {
     } else {
       intUptos = intPool.buffers[p.intStart >> DocumentsWriter.INT_BLOCK_SHIFT];
       intUptoStart = p.intStart & DocumentsWriter.INT_BLOCK_MASK;
-      consumer.addTerm(p);
+      consumer.addTerm(p);//wangxc addTerm和newTerm的区别？2014-5-8 13:57:37
     }
 
     if (doNextCall)
-      nextPerField.add(p.textStart);
+      nextPerField.add(p.textStart);//wangxc 这是个什么逻辑？2014-5-8 13:57:29
   }
 
   int[] intUptos;

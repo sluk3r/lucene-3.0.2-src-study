@@ -140,6 +140,7 @@ final class DocInverterPerField extends DocFieldConsumerPerField {
 
             OffsetAttribute offsetAttribute = fieldState.attributeSource.addAttribute(OffsetAttribute.class);
             PositionIncrementAttribute posIncrAttribute = fieldState.attributeSource.addAttribute(PositionIncrementAttribute.class);
+              //wangxc 怎么除了这两个外， 真正有意义的没有体现出来？ 如Term相关的。
             
             consumer.start(field);
             
@@ -175,7 +176,7 @@ final class DocInverterPerField extends DocFieldConsumerPerField {
                 success = true;
               } finally {
                 if (!success)
-                  docState.docWriter.setAborting();
+                  docState.docWriter.setAborting(); //wangxc 这个断点是在哪记录着的？2014-5-8 14:15:51
               }
               fieldState.position++;
               offsetEnd = fieldState.offset + offsetAttribute.endOffset();

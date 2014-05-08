@@ -33,7 +33,7 @@ public abstract class BufferedIndexOutput extends IndexOutput {
   @Override
   public void writeByte(byte b) throws IOException {
     if (bufferPosition >= BUFFER_SIZE)
-      flush();
+          flush();
     buffer[bufferPosition++] = b;
   }
 

@@ -18,8 +18,8 @@ package org.apache.lucene.index;
  */
 
 
-/** This is the base class for an in-memory posting list,
- *  keyed by a Token.  {@link TermsHash} maintains a hash
+/** This is the base class for an in-memory posting list, //wangxc 这个基于内存的PostingList最终是怎么跟buffer和物理文件关联起来的？
+ *  keyed by a Token.  {@link TermsHash} maintains a hash//wangxc Keyed by a Token的体现是？
  *  table holding one instance of this per unique Token.
  *  Consumers of TermsHash ({@link TermsHashConsumer}) must
  *  subclass this class with its own concrete class.
